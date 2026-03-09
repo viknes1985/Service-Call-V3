@@ -3,6 +3,12 @@ import { createServer as createViteServer } from "vite";
 import Database from "better-sqlite3";
 import path from "path";
 import axios from "axios";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Re-create __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const db = new Database("service_call.db");
 
