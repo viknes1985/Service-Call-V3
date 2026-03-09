@@ -47,7 +47,7 @@ const ServiceSchema = new mongoose.Schema({
   description: String,
   contactNumber: String,
   operatingHours: String,
-  photoUrls: [String], // Changed from photoUrl TEXT to Array
+  photoUrls: [String], 
   createdBy: { type: String, ref: 'User' },
   createdAt: { type: Number, default: Date.now }
 }, { _id: false });
@@ -59,7 +59,6 @@ const RatingSchema = new mongoose.Schema({
   rating: Number,
   createdAt: { type: Number, default: Date.now }
 });
-// Composite unique index to mimic SQLite's UNIQUE(serviceId, userId)
 RatingSchema.index({ serviceId: 1, userId: 1 }, { unique: true });
 const Rating = mongoose.model("Rating", RatingSchema);
 
@@ -185,6 +184,34 @@ async function startServer() {
   app.delete("/api/services/:id", async (req, res) => {
     await Service.findByIdAndDelete(req.params.id);
     res.json({ success: true });
+  });
+
+  // --- Top Categories Route ---
+  app.get("/api/top-categories", async (req, res) => {
+    try {
+      const topCategories = await Service.aggregate([
+        {
+          $group: {
+            _id: "$category",
+            count: { $sum: 1 },
+            thumbnails: { $push: { $arrayElemAt: ["$photoUrls", 0] } }
+          }
+        },
+        { $sort: { count: -1 } },
+        { $limit: 6 },
+        {
+          $project: {
+            _id: 0,
+            category: "$_id",
+            count: 1,
+            thumbnails: { $slice: ["$thumbnails", 4] }
+          }
+        }
+      ]);
+      res.json(topCategories);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // --- Production Build Handling ---
