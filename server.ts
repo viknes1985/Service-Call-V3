@@ -1,16 +1,25 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
-import Database from "better-sqlite3";
+import mongoose from "mongoose";
 import path from "path";
-import axios from "axios";
+import fs from "fs";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// --- ES Module Fix for __dirname ---
+// Fix for __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const db = new Database("service_call.db");
+// MongoDB connection
+const MONGODB_URI = process.env.MONGODB_URI;
+
+mongoose.connect(MONGODB_URI)
+.then(() => {
+    console.log("MongoDB connected");
+})
+.catch((err) => {
+    console.error("MongoDB connection error:", err);
+});
 
 // --- Configuration ---
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY; 
