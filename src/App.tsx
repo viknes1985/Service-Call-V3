@@ -53,11 +53,17 @@ export default function App() {
     setUserServices(data);
   };
 
-  const fetchTopCategories = async () => {
-    const res = await fetch('/api/categories/top');
-    const data = await res.json();
-    setTopCategories(data);
-  };
+ const fetchTopCategories = async () => {
+  try {
+    const response = await fetch('/api/top-categories');
+    const data = await response.json();
+    if (Array.isArray(data)) {
+      setTopCategories(data);
+    }
+  } catch (error) {
+    console.error("Error fetching top categories:", error);
+  }
+};
 
   const handleSearch = () => {
     const filters = {
