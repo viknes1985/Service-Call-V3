@@ -13,7 +13,7 @@ const __dirname = dirname(__filename);
 const db = new Database("service_call.db");
 
 // --- Configuration ---
-const IMGBB_API_KEY = process.env.IMGBB_API_KEY || "591793485545244"; 
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY; 
 
 /**
  * Helper: Uploads a base64 string to ImgBB and returns the permanent URL.
